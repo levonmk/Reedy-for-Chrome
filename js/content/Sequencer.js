@@ -16,6 +16,7 @@
 		INIT_WPM_REDUCE_0   = 0.5,  // from 0 to 1 - wpm reduce factor for the FIRST start (more value means higher start wpm)
 		INIT_WPM_REDUCE_1   = 0.6,  // from 0 to 1 - wpm reduce factor for the FOLLOWING starts (more value means higher start wpm)
 		ACCEL_CURVE         = 3,    // from 0 to infinity - more value means more smooth acceleration curve
+        MAX_CHARS           = 13,
 		PI2                 = Math.PI/2;
 	
 	
@@ -102,7 +103,11 @@
 		
 		function changeIndex(back) {
 			var indexBefore = api.index;
-			back ? api.index-- : api.index++;
+            if (back){
+                api.index--;
+            }else{
+                api.index += api.getTokens().length;
+            }
 			normIndex();
 			
 			if (api.index !== indexBefore) {
@@ -164,6 +169,31 @@
 		api.getToken = function() {
 			return data[api.index];
 		}
+
+        api.getTokens = function() {
+            var tokens = [];
+            var chars = 0;
+            var token = data[api.index];
+            tokens.push(token);
+            chars += token.toString().length;
+            if (chars<MAX_CHARS && api.index+2<data.length){
+                var nextChars = chars;
+                var token_plus_one = data[api.index+1];
+                var token_plus_two = data[api.index+2];
+                nextChars += token_plus_one.toString().length;
+                nextChars += token_plus_two.toString().length;
+                while(nextChars<MAX_CHARS && api.index+tokens.length+1<data.length){
+                    tokens.push(token_plus_one);
+                    tokens.push(token_plus_two);
+                    chars = nextChars;
+                    token_plus_one = data[api.index+tokens.length];
+                    token_plus_two = data[api.index+tokens.length+1];
+                    nextChars += token_plus_one.toString().length;
+                    nextChars += token_plus_two.toString().length;
+                }
+            }
+            return tokens;
+        }
 		
 		api.getContext = function(charsLimit) {
 			var token = api.getToken();

@@ -362,15 +362,24 @@
 				$word.innerHTML = '';
 				return;
 			}
-			
-			str = str || sequencer.getToken().toString();
-			
-			
+
 			var focusMode = app.get('focusMode'),
 				html;
+
+            var tokens = sequencer.getTokens();
+            var middleTokenIndex = Math.floor(tokens.length/2);
+            var middleWordOffset = 0;
+            str = '';
+            for (var i=0; i<tokens.length; i++){
+                if (i === middleTokenIndex){
+                    middleWordOffset = str.length;
+                }
+                str = str + tokens[i].toString() + ' ';
+            }
+            str = str.trim();
 			
 			if (focusMode) {
-				var pivot = app.calcPivotPoint(str);
+				var pivot = middleWordOffset + app.calcPivotPoint(tokens[middleTokenIndex].toString());
 				html =
 					app.htmlEncode(str.substr(0, pivot))
 					+'<span>'+app.htmlEncode(str[pivot])+'</span>'

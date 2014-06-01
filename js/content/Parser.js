@@ -4,7 +4,8 @@
 	
 	function splitWordIfNeeded(str) {
 		var dashIndex = str.indexOf("-"), uscoreIndex = str.indexOf("_"), slashIndex = str.indexOf("/");
-		if (str.length > 13 || str.length > 9 && (dashIndex > -1 || uscoreIndex > -1 || slashIndex > -1)) {
+        var maxLength = 13;
+		if (str.length > maxLength || str.length > (maxLength-4) && (dashIndex > -1 || uscoreIndex > -1 || slashIndex > -1)) {
 			var index = dashIndex > -1
 					? dashIndex // a dash is more important
 					: slashIndex > -1 ? slashIndex : uscoreIndex,
