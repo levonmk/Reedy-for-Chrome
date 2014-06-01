@@ -182,6 +182,7 @@
                 var token_plus_two = data[api.index+2];
                 nextChars += token_plus_one.toString().length;
                 nextChars += token_plus_two.toString().length;
+                nextChars += 2;
                 while(nextChars<MAX_CHARS && api.index+tokens.length+1<data.length){
                     tokens.push(token_plus_one);
                     tokens.push(token_plus_two);
@@ -190,16 +191,17 @@
                     token_plus_two = data[api.index+tokens.length+1];
                     nextChars += token_plus_one.toString().length;
                     nextChars += token_plus_two.toString().length;
+                    nextChars += 2;
                 }
             }
             return tokens;
         }
 		
 		api.getContext = function(charsLimit) {
-			var token = api.getToken();
+            var tokens = api.getTokens();
 			return {
-				before: raw.substring(charsLimit ? Math.max(token.startIndex-charsLimit, 0) : 0, token.startIndex).trim(),
-				after: raw.substring(token.endIndex, charsLimit ? Math.min(token.endIndex+charsLimit, raw.length) : raw.length).trim()
+				before: raw.substring(charsLimit ? Math.max(tokens[0].startIndex-charsLimit, 0) : 0, tokens[0].startIndex).trim(),
+				after: raw.substring(tokens[tokens.length-1].endIndex, charsLimit ? Math.min(tokens[tokens.length-1].endIndex+charsLimit, raw.length) : raw.length).trim()
 			};
 		}
 		
