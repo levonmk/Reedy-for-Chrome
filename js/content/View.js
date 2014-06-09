@@ -367,19 +367,24 @@
 				html;
 
             var tokens = sequencer.getTokens();
-            var middleTokenIndex = Math.floor(tokens.length/2);
-            var middleWordOffset = 0;
+            var pivotTokenIndex = -1;
+            var pivotWordOffset = 0;
             str = '';
             for (var i=0; i<tokens.length; i++){
-                if (i === middleTokenIndex){
-                    middleWordOffset = str.length;
+                if (pivotTokenIndex<0 && app.stopwords.indexOf(tokens[i].toString())<0){
+                    pivotTokenIndex = i;
+                    pivotWordOffset = str.length;
                 }
                 str = str + tokens[i].toString() + ' ';
             }
             str = str.trim();
+            
+            if (pivotTokenIndex<0){
+                pivotTokenIndex = 0;
+            }
 			
 			if (focusMode) {
-				var pivot = middleWordOffset + app.calcPivotPoint(tokens[middleTokenIndex].toString());
+				var pivot = pivotWordOffset + app.calcPivotPoint(tokens[pivotTokenIndex].toString());
 				html =
 					app.htmlEncode(str.substr(0, pivot))
 					+'<span>'+app.htmlEncode(str[pivot])+'</span>'

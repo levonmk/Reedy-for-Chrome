@@ -16,8 +16,33 @@
 		INIT_WPM_REDUCE_0   = 0.5,  // from 0 to 1 - wpm reduce factor for the FIRST start (more value means higher start wpm)
 		INIT_WPM_REDUCE_1   = 0.6,  // from 0 to 1 - wpm reduce factor for the FOLLOWING starts (more value means higher start wpm)
 		ACCEL_CURVE         = 3,    // from 0 to infinity - more value means more smooth acceleration curve
-        MAX_CHARS           = 13,
 		PI2                 = Math.PI/2;
+
+    app.stopwords = [
+        'a',
+        'am',
+        'an',
+        'and',
+        'are',
+        'at',
+        'be',
+        'did',
+        'for',
+        'had',
+        'has',
+        'in',
+        'is',
+        'its',
+        'it\'s',
+        'no',
+        'not',
+        'of',
+        'the',
+        'to',
+        'was',
+        'were',
+        'will',
+    ];
 	
 	
 	app.Sequencer = function(raw, data) {
@@ -172,26 +197,16 @@
 
         api.getTokens = function() {
             var tokens = [];
-            var chars = 0;
             var token = data[api.index];
             tokens.push(token);
-            chars += token.toString().length;
-            if (chars<MAX_CHARS && api.index+2<data.length){
-                var nextChars = chars;
-                var token_plus_one = data[api.index+1];
-                var token_plus_two = data[api.index+2];
-                nextChars += token_plus_one.toString().length;
-                nextChars += token_plus_two.toString().length;
-                nextChars += 2;
-                while(nextChars<MAX_CHARS && api.index+tokens.length+1<data.length){
-                    tokens.push(token_plus_one);
-                    tokens.push(token_plus_two);
-                    chars = nextChars;
-                    token_plus_one = data[api.index+tokens.length];
-                    token_plus_two = data[api.index+tokens.length+1];
-                    nextChars += token_plus_one.toString().length;
-                    nextChars += token_plus_two.toString().length;
-                    nextChars += 2;
+            while (app.stopwords.indexOf(token.toString())>=0 && api.index+tokens.length<data.length){
+                token = data[api.index+tokens.length];
+                tokens.push(token);
+            }
+            if(token.toString().length<10 && api.index+tokens.length<data.length){
+                token = data[api.index+tokens.length];
+                if(token.toString().length<5 && app.stopwords.indexOf(token.toString())<0){
+                    tokens.push(token);
                 }
             }
             return tokens;
